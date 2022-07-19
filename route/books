@@ -1,0 +1,58 @@
+const express = require ('express')
+const app = express.Router()
+const Book = require('../models/book')
+
+app.get('/', async(req, res, next)=> {
+    try {
+        const books = await Book.find()
+        res.json(books)
+    }catch(err){
+        res.send('Error ' + err)
+    }
+})
+
+app.post('/', async(req, res, next) => {
+    const book = new Book({
+    title: req.body.title,
+    author: req.body.author,
+    price: req.body.price
+})
+try{
+    const a1 = await book.save()
+    res.json(a1)
+}catch(err){
+    res.send('Error')
+}
+})
+
+app.get('/:title', async(req,res, next) => {
+    try{
+           const book = await Book.findByTitle(req.params.title)
+           res.json(book)
+    }catch(err){
+        res.send('Error ' + err)
+    }
+})
+
+app.patch('/:title',async(req,res, next)=> {
+    try{
+        const book = await Book.findByTitle(req.params.title) 
+        const {title, author, price}=req.body
+        const a1 = await book.save()
+        res.json(a1)   
+    }catch(err){
+        res.send('Error')
+    }
+
+})
+
+app.delete('/:title', async (req, res, next) => {
+    try{
+        const book = await Book.remove(req.params.title) 
+        res.json(book)   
+    }catch(err){
+        res.send('Error')
+    }
+})
+
+module.exports = app 
